@@ -39,13 +39,13 @@ export default function Reviews() {
               <p>{content}</p>
             </li>
           ))
-        ) : loading ? (
-          <p>No reviews yet</p>
-        ) : null}
+        ) : !loading ? (
+          <li>No reviews yet</li>
+        ) : (
+          <li>Loading...</li>
+        )}
       </ul>
-
-      {loading && <div>Loading...</div>}
-      {error && <div>Something went wrong...</div>}
+      {error && <p>Something went wrong...</p>}
     </div>
   );
 }
