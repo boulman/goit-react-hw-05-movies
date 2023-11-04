@@ -1,7 +1,7 @@
 import { BackLink } from 'components/BackLink/BackLink';
 import { fetchSearch } from 'components/fetches';
-import React, { useRef, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 
 export default function Movies() {
   const [loading, setLoading] = useState(false);
@@ -9,9 +9,9 @@ export default function Movies() {
   const [movies, setMovies] = useState([]);
   const location = useLocation();
   const controller = useRef();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  const getMovies = async query => {
     if (controller.current) {
       controller.current.abort();
     }
@@ -19,7 +19,7 @@ export default function Movies() {
     try {
       setError(false);
       setLoading(true);
-      const data = await fetchSearch(e.target[0].value, controller.current);
+      const data = await fetchSearch(query, controller.current);
       setMovies(data.results);
     } catch (error) {
       if (error.code !== 'ERR_CANCELED') {
@@ -29,8 +29,23 @@ export default function Movies() {
     } finally {
       setLoading(false);
     }
+  };
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    if (!e.target[0].value) {
+      return;
+    }
+    setSearchParams({ query: e.target[0].value });
   }
 
+  useEffect(() => {
+    const query = searchParams.get('query');
+    if (!query) {
+      return;
+    }
+    getMovies(query);
+  }, [searchParams]);
   return (
     <div>
       <BackLink to={location.state?.from ?? '/'} />
@@ -41,7 +56,9 @@ export default function Movies() {
       <ul>
         {movies?.map(movie => (
           <li key={movie.id}>
-            <Link to={`/movies/${movie.id}`}>{movie.title}</Link>
+            <Link to={`/movies/${movie.id}`} state={{ from: location }}>
+              {movie.title}
+            </Link>
           </li>
         ))}
       </ul>
