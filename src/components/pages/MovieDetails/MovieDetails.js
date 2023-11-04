@@ -43,10 +43,20 @@ export default function MovieDetails() {
             <p>Additional information</p>
             <ul>
               <li>
-                <Link to={`/movies/${movieId}/cast`}>Cast</Link>
+                <Link
+                  to={`/movies/${movieId}/cast`}
+                  state={{ from: location.state?.from }}
+                >
+                  Cast
+                </Link>
               </li>
               <li>
-                <Link to={`/movies/${movieId}/reviews`}>Reviews</Link>
+                <Link
+                  to={`/movies/${movieId}/reviews`}
+                  state={{ from: location.state?.from }}
+                >
+                  Reviews
+                </Link>
               </li>
             </ul>
           </AdditionalInfo>
